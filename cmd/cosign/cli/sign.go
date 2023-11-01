@@ -122,6 +122,7 @@ race conditions or (worse) malicious tampering.
 				TSAServerName:                  o.TSAServerName,
 				TSAServerURL:                   o.TSAServerURL,
 				IssueCertificateForExistingKey: o.IssueCertificate,
+				DisableLoadCert:                o.DisableLoadCert,
 			}
 			if err := sign.SignCmd(ro, ko, *o, args); err != nil {
 				if o.Attachment == "" {

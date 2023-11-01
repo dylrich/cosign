@@ -391,7 +391,7 @@ func signerFromSecurityKey(ctx context.Context, keySlot string) (*SignerVerifier
 	}, nil
 }
 
-func signerFromKeyRef(ctx context.Context, certPath, certChainPath, keyRef string, passFunc cosign.PassFunc) (*SignerVerifier, error) {
+func signerFromKeyRef(ctx context.Context, certPath, certChainPath, keyRef string, passFunc cosign.PassFunc, disableLoadCert bool) (*SignerVerifier, error) {
 	k, err := sigs.SignerVerifierFromKeyRef(ctx, keyRef, passFunc)
 	if err != nil {
 		return nil, fmt.Errorf("reading key: %w", err)
@@ -406,7 +406,7 @@ func signerFromKeyRef(ctx context.Context, certPath, certChainPath, keyRef strin
 	// With PKCS11, we assume the certificate is in the same slot on the PKCS11
 	// token as the private key. If it's not there, show a warning to the
 	// user.
-	if pkcs11Key, ok := k.(*pkcs11key.Key); ok {
+	if pkcs11Key, ok := k.(*pkcs11key.Key); ok && !disableLoadCert {
 		certFromPKCS11, _ := pkcs11Key.Certificate()
 		certSigner.close = pkcs11Key.Close
 
@@ -567,7 +567,7 @@ func SignerFromKeyOpts(ctx context.Context, certPath string, certChainPath strin
 	case ko.Sk:
 		sv, err = signerFromSecurityKey(ctx, ko.Slot)
 	case ko.KeyRef != "":
-		sv, err = signerFromKeyRef(ctx, certPath, certChainPath, ko.KeyRef, ko.PassFunc)
+		sv, err = signerFromKeyRef(ctx, certPath, certChainPath, ko.KeyRef, ko.PassFunc, ko.DisableLoadCert)
 	default:
 		genKey = true
 		ui.Infof(ctx, "Generating ephemeral keys...")

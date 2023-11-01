@@ -49,6 +49,7 @@ type SignOptions struct {
 	AnnotationOptions
 	Registry             RegistryOptions
 	RegistryExperimental RegistryExperimentalOptions
+	DisableLoadCert      bool
 }
 
 var _ Interface = (*SignOptions)(nil)
@@ -130,4 +131,7 @@ func (o *SignOptions) AddFlags(cmd *cobra.Command) {
 
 	cmd.Flags().StringVar(&o.SignContainerIdentity, "sign-container-identity", "",
 		"manually set the .critical.docker-reference field for the signed identity, which is useful when image proxies are being used where the pull reference should match the signature")
+
+	cmd.Flags().BoolVar(&o.DisableLoadCert, "disable-load-cert", false,
+		"Set to disable all certificate use when signing")
 }

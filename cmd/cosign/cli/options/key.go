@@ -52,4 +52,6 @@ type KeyOpts struct {
 	// Modeled after InsecureSkipVerify in tls.Config, this disables
 	// verifying the SCT.
 	InsecureSkipFulcioVerify bool
+
+	DisableLoadCert bool
 }
